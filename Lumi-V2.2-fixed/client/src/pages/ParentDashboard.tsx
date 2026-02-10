@@ -10,7 +10,12 @@ export default function ParentDashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Espace parent</h1>
             <p className="mt-2 text-white/70">
-              Contrôle calme. Aucun mécanisme addictif, aucune “gamification”.
+              LUMI est un petit allié du quotidien qui accompagne vos enfants dans leurs rituels de la journée (se lever, se calmer, se concentrer, se coucher…), 
+              avec douceur et bonne humeur.
+Il aide l’enfant à vivre ces moments de transition sereinement, tout en soutenant les parents grâce à un cadre rassurant, simple et 
+              bienveillant.
+LUMI n’impose rien : il accompagne, encourage et transforme les rituels en moments positifs partagés, favorisant l’autonomie, l’apaisement
+              et l’équilibre émotionnel de l’enfant..
             </p>
           </div>
           <div className="flex gap-3">
