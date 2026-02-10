@@ -1,21 +1,13 @@
-/**
- * Lumi — SFX (API stable)
- *
- * Objectif: garder une API simple (playClickSfx / playPositiveSfx)
- * tout en basculant sur WebAudio pour:
- * - préchargement
- * - meilleure compatibilité mobile (autoplay)
- * - pas de latence / pas de new Audio() à chaque clic
- */
+import { playAudio } from "./audio";
 
-import { initAudioFromUserGesture, playSfx } from "@/lib/audio";
+export const playMagicDust = () =>
+  playAudio("/audio/magic/magic_dust_soft.ogg");
 
-export { initAudioFromUserGesture };
+export const playLumiTeeth = () =>
+  playAudio("/audio/lumi/ritual_teeth.ogg");
 
-export function playClickSfx() {
-  void playSfx("click");
-}
+export const playLumiBath = () =>
+  playAudio("/audio/lumi/ritual_bath.ogg");
 
-export function playPositiveSfx() {
-  void playSfx("positive");
-}
+export const playLumiSleep = () =>
+  playAudio("/audio/lumi/ritual_sleep.ogg");
