@@ -7,7 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Welcome from "./pages/Welcome";
 import Game from "./pages/Game";
 import ParentDashboard from "./pages/ParentDashboard";
-import { playClickSfx } from "@/lib/sfx";
+import { initAudioFromUserGesture, playClickSfx } from "@/lib/sfx";
 
 
 function Router() {
@@ -39,6 +39,7 @@ function App() {
           <Toaster />
           <div
             onPointerDownCapture={(e) => {
+              void initAudioFromUserGesture();
               const t = e.target as HTMLElement | null;
               if (!t) return;
               // déclenche uniquement pour les interactions type bouton (enfantin, pas envahissant)

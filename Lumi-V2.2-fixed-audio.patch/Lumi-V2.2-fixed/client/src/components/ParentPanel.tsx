@@ -14,6 +14,7 @@ type ParentSettings = {
   dailyLimitMinutes: number; // 0 = no limit
   calmMode: boolean;
   sounds: boolean;
+  soundsVolume: number; // 0..1
   bedtime: string; // HH:MM
   reminders: boolean;
 };
@@ -267,6 +268,28 @@ export default function ParentPanel({
                   disabled={!unlocked}
                   onCheckedChange={(v) => setSettings((p) => ({ ...p, sounds: v }))}
                 />
+              </div>
+
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Volume sons</span>
+                  <span>{Math.round((settings.soundsVolume ?? 1) * 100)}%</span>
+                </div>
+                <div className="mt-3">
+                  <Slider
+                    value={[Math.round((settings.soundsVolume ?? 1) * 100)]}
+                    min={0}
+                    max={100}
+                    step={5}
+                    disabled={!unlocked || !settings.sounds}
+                    onValueChange={(v) =>
+                      setSettings((p) => ({ ...p, soundsVolume: Math.max(0, Math.min(1, (v[0] ?? 100) / 100)) }))
+                    }
+                  />
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  0% = muet. Recommandé : 60–80% pour une ambiance douce.
+                </div>
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <div className="text-sm">Mode calme renforcé</div>

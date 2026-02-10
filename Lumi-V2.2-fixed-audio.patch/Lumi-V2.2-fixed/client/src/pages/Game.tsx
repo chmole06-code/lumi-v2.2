@@ -193,6 +193,8 @@ export default function Game() {
       if (pct >= 100) {
         window.clearInterval(tick);
 
+        playPositiveSfx();
+
         setToday((p) => ({ ...p, routines: { ...p.routines, [routine]: true } }));
 
         setState((p) => {
