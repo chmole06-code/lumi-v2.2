@@ -10,12 +10,7 @@ export default function ParentDashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Espace parent</h1>
             <p className="mt-2 text-white/70">
-              LUMI est un petit allié du quotidien qui accompagne vos enfants dans leurs rituels de la journée (se lever, se calmer, se concentrer, se coucher…), 
-              avec douceur et bonne humeur.
-Il aide l’enfant à vivre ces moments de transition sereinement, tout en soutenant les parents grâce à un cadre rassurant, simple et 
-              bienveillant.
-LUMI n’impose rien : il accompagne, encourage et transforme les rituels en moments positifs partagés, favorisant l’autonomie, l’apaisement
-              et l’équilibre émotionnel de l’enfant..
+          L'allié des enfants & des parents!
             </p>
           </div>
           <div className="flex gap-3">
@@ -51,11 +46,16 @@ LUMI n’impose rien : il accompagne, encourage et transforme les rituels en mom
             <div className="text-sm text-white/70">Contrôles</div>
 
             <div className="mt-6 text-sm text-white/70">
-              Un seul mode : calme. Le bouton “repos/rest” est supprimé côté enfant.
+                  LUMI est un petit allié du quotidien qui accompagne vos enfants dans leurs rituels de la journée (se lever, se calmer, se concentrer, se coucher…), 
+              avec douceur et bonne humeur.
+Il aide l’enfant à vivre ces moments de transition sereinement, tout en soutenant les parents grâce à un cadre rassurant, simple et 
+              bienveillant.
+
             </div>
 
             <div className="mt-6 text-xs text-white/45">
-              Objectif : sérénité. Pas de badges, pas de streaks, pas de récompenses.
+             LUMI n’impose rien : il accompagne, encourage et transforme les rituels en moments positifs partagés, favorisant l’autonomie, l’apaisement
+              et l’équilibre émotionnel de l’enfant.
             </div>
           </div>
         </div>
