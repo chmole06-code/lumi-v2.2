@@ -1,11 +1,16 @@
 /**
- * Mon Petit Allié — Jeu (V2.0)
+ * Mon Petit Allié — Jeu (V3.0)
  *
  * Objectifs verrouillés :
  * - UX calme, rassurante, non addictive
  * - Lumi au centre, jamais un gadget
  * - Poses fixes (assets) + micro-animations moteur uniquement
  * - Dashboard parent utile (LocalStorage)
+ *
+ * Mise à jour V3 :
+ * - Ajout rituels Manger + Pyjama
+ * - Ordre métier : Bain → Manger → Dents → Pyjama → Dodo
+ * - Audio métier : FX poussière + voix rituel (une fois au start)
  */
 
 import React, { useEffect, useRef, useState } from "react";
@@ -14,22 +19,23 @@ import RoutineButton from "@/components/RoutineButton";
 import HealthBar from "@/components/HealthBar";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { playPositiveSfx } from "@/lib/sfx";
+import { useAudio } from "@/audio/useAudio";
+
+type Routine = "bath" | "eat" | "teeth" | "pyjama" | "sleep";
 
 type TodayStats = {
   date: string; // YYYY-MM-DD
-  routines: Record<"brush" | "bath" | "night" | "rest", boolean>;
+  routines: Record<Routine, boolean>;
   minutesUsed: number;
 };
 
-type Routine = "brush" | "bath" | "night" | "rest";
-
 // Durées (ms) : routines calmes et stables
 const DURATION_MS: Record<Routine, number> = {
-  brush: 15000,
   bath: 15000,
-  night: 15000,
-  rest: 15000,
+  eat: 15000,
+  teeth: 15000,
+  pyjama: 15000,
+  sleep: 15000,
 };
 
 interface GameState {
@@ -42,9 +48,12 @@ interface GameState {
   lockOverrideUntil?: number; // timestamp ms
 }
 
-const LS_TODAY = "mpa_today_stats_v2";
-const LS_HISTORY = "mpa_history_v2";
-const LS_LUMI_SLEEP = "mpa_lumi_sleep_v2";
+/**
+ * ⚠️ V3 : on bump les clés pour éviter conflit shape (v2 n’a pas eat/pyjama)
+ */
+const LS_TODAY = "mpa_today_stats_v3";
+const LS_HISTORY = "mpa_history_v3";
+const LS_LUMI_SLEEP = "mpa_lumi_sleep_v3";
 
 function todayKey(d = new Date()) {
   return d.toISOString().slice(0, 10);
@@ -74,7 +83,7 @@ function writeSleep(s: SleepState) {
 function defaultToday(): TodayStats {
   return {
     date: todayKey(),
-    routines: { brush: false, bath: false, night: false, rest: false },
+    routines: { bath: false, eat: false, teeth: false, pyjama: false, sleep: false },
     minutesUsed: 0,
   };
 }
@@ -87,33 +96,43 @@ const AGE_GROUP: "2-3" | "4-6" = "4-6";
 const COPY = {
   "2-3": {
     buttons: {
-      brush: "Dents",
       bath: "Bain",
-      night: "Dodo",
-},
+      eat: "Manger",
+      teeth: "Dents",
+      pyjama: "Pyjama",
+      sleep: "Dodo",
+    },
     hint: {
-      brush: "Allez, dents !",
       bath: "Allez, bain !",
-      night: "C’est dodo.",
+      eat: "Miam miam !",
+      teeth: "Allez, dents !",
+      pyjama: "Pyjama tout doux.",
+      sleep: "C’est dodo.",
       idle: "Choisis.",
     },
   },
   "4-6": {
     buttons: {
-      brush: "Dents",
       bath: "Bain",
-      night: "Dodo",
-},
+      eat: "Manger",
+      teeth: "Dents",
+      pyjama: "Pyjama",
+      sleep: "Dodo",
+    },
     hint: {
-      brush: "Allez, on va se brosser les dents.",
       bath: "C’est l’heure du bain.",
-      night: "C’est l’heure du dodo.",
+      eat: "C’est l’heure de manger.",
+      teeth: "Allez, on va se brosser les dents.",
+      pyjama: "On met le pyjama tout doux.",
+      sleep: "C’est l’heure du dodo.",
       idle: "Choisis un petit rituel.",
     },
   },
 } as const;
 
 export default function Game() {
+  const audio = useAudio();
+
   const [today, setToday] = useState<TodayStats>(() => defaultToday());
 
   const [state, setState] = useState<GameState>({
@@ -142,11 +161,11 @@ export default function Game() {
     } else {
       setToday(t);
     }
+
     const ss = readSleep();
     if (ss.sleeping) {
       setState((p) => ({ ...p, lumi: "night", busy: false }));
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -180,16 +199,33 @@ export default function Game() {
     return () => clearInterval(id);
   }, []);
 
-  const startRoutine = (routine: Routine) => {
+  const startRoutine = async (routine: Routine) => {
     if (state.locked || state.busy) return;
     if (readSleep().sleeping) return;
 
+    // ✅ Lumi pose/état : on utilise les states existants + assertions si nécessaire
+    // (selon tes assets, "dinner" et "pyjama" existent généralement)
     const routineLumi: Record<Routine, LumiState> = {
-      brush: "brush",
       bath: "bath",
-      night: "night" as LumiState,
-      rest: "night" as LumiState,
+      eat: "dinner" as LumiState,
+      teeth: "brush" as LumiState,
+      pyjama: "pyjama" as LumiState,
+      sleep: "night" as LumiState,
     };
+
+    // ✅ Audio métier : FX poussière + voix du rituel (une fois au démarrage)
+    // - unlock se fait déjà silencieusement au niveau App.tsx sur la première interaction
+    // - ici c’est strictement "moment métier"
+    try {
+      await audio.playFx("fairyDust");
+      if (routine === "bath") await audio.playRitual("bath");
+      if (routine === "eat") await audio.playRitual("eat");
+      if (routine === "teeth") await audio.playRitual("teeth");
+      if (routine === "pyjama") await audio.playRitual("pyjama");
+      if (routine === "sleep") await audio.playRitual("sleep");
+    } catch {
+      // silence volontaire : pas de bruit d’erreur en UX enfant
+    }
 
     setState((p) => ({
       ...p,
@@ -209,7 +245,7 @@ export default function Game() {
       if (pct >= 100) {
         window.clearInterval(tick);
 
-        if (routine === "night" || routine === "rest") {
+        if (routine === "sleep") {
           writeSleep({ sleeping: true, since: Date.now() });
         }
 
@@ -217,7 +253,9 @@ export default function Game() {
 
         setState((p) => {
           const healed = Math.min(100, p.health + 10);
-          const shouldReturnIdle = routine === "brush" || routine === "bath";
+
+          // Retour à idle après routines non-sommeil
+          const shouldReturnIdle = routine !== "sleep";
           const nextLumi: LumiState = shouldReturnIdle ? "idle" : ("night" as LumiState);
 
           return {
@@ -273,16 +311,19 @@ export default function Game() {
 
   // ✅ textes selon âge
   const copy = COPY[AGE_GROUP];
-  const routineHint = state.routineActive
-    ? state.routineActive === "brush"
-      ? copy.hint.brush
-      : state.routineActive === "bath"
-        ? copy.hint.bath
-        : copy.hint.night
-    : copy.hint.idle;
-
-  // ✅ ultra minimal : description = nom du bouton
   const BTN = copy.buttons;
+
+  const routineHint = state.routineActive
+    ? state.routineActive === "bath"
+      ? copy.hint.bath
+      : state.routineActive === "eat"
+        ? copy.hint.eat
+        : state.routineActive === "teeth"
+          ? copy.hint.teeth
+          : state.routineActive === "pyjama"
+            ? copy.hint.pyjama
+            : copy.hint.sleep
+    : copy.hint.idle;
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#070A12]">
@@ -307,8 +348,9 @@ export default function Game() {
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-white/85">Lumi</div>
                   <div className="text-xs text-white/60">
-                    {today.routines.brush ? "🪥" : "—"} {today.routines.bath ? "🫧" : "—"}{" "}
-                    {today.routines.night ? "🌙" : "—"}
+                    {today.routines.bath ? "🫧" : "—"} {today.routines.eat ? "🍽️" : "—"}{" "}
+                    {today.routines.teeth ? "🪥" : "—"} {today.routines.pyjama ? "🧸" : "—"}{" "}
+                    {today.routines.sleep ? "🌙" : "—"}
                   </div>
                 </div>
 
@@ -346,26 +388,42 @@ export default function Game() {
 
               <Card className="rounded-3xl border-white/10 bg-white/5 backdrop-blur-md p-5">
                 <div className="text-sm font-semibold text-white/85">Rituels</div>
+
+                {/* ✅ Ordre métier verrouillé : Bain → Manger → Dents → Pyjama → Dodo */}
                 <div className="mt-3 grid grid-cols-1 gap-3">
-                  <RoutineButton
-                    icon="🪥"
-                    title={BTN.brush}
-                    description={BTN.brush}
-                    onClick={() => startRoutine("brush")}
-                    disabled={state.busy}
-                  />
                   <RoutineButton
                     icon="🫧"
                     title={BTN.bath}
                     description={BTN.bath}
-                    onClick={() => startRoutine("bath")}
+                    onClick={() => void startRoutine("bath")}
+                    disabled={state.busy}
+                  />
+                  <RoutineButton
+                    icon="🍽️"
+                    title={BTN.eat}
+                    description={BTN.eat}
+                    onClick={() => void startRoutine("eat")}
+                    disabled={state.busy}
+                  />
+                  <RoutineButton
+                    icon="🪥"
+                    title={BTN.teeth}
+                    description={BTN.teeth}
+                    onClick={() => void startRoutine("teeth")}
+                    disabled={state.busy}
+                  />
+                  <RoutineButton
+                    icon="🧸"
+                    title={BTN.pyjama}
+                    description={BTN.pyjama}
+                    onClick={() => void startRoutine("pyjama")}
                     disabled={state.busy}
                   />
                   <RoutineButton
                     icon="🌙"
-                    title={BTN.night}
-                    description={BTN.night}
-                    onClick={() => startRoutine("night")}
+                    title={BTN.sleep}
+                    description={BTN.sleep}
+                    onClick={() => void startRoutine("sleep")}
                     disabled={state.busy}
                   />
                 </div>
