@@ -19,7 +19,7 @@ import RoutineButton from "@/components/RoutineButton";
 import HealthBar from "@/components/HealthBar";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useAudio } from "@/audio/useAudio";
+import { useAudio } from "@/audio/useAudio"; 
 
 type Routine = "bath" | "eat" | "teeth" | "pyjama" | "sleep";
 

@@ -5,7 +5,9 @@ export type LumiState =
   | "brush"
   | "bath"
   | "night"
-  // tu peux garder les anciens si tu les avais déjà :
+  | "eat"
+  | "pyjama"
+  // anciens (si tu les utilisais déjà)
   | "wake"
   | "sad"
   | "tired";
@@ -23,6 +25,10 @@ function videoSrcFor(state: LumiState): string {
       return "/videos/lumi/lumi_brush.mp4";
     case "bath":
       return "/videos/lumi/lumi_bath.mp4";
+    case "eat":
+      return "/videos/lumi/lumi_dinner.mp4";
+    case "pyjama":
+      return "/videos/lumi/lumi_pyjama.mp4";
     case "night":
       return "/videos/lumi/lumi_night.mp4";
     case "idle":
@@ -43,7 +49,6 @@ export default function Lumi({ state, pulse = false, size = "lg", className = ""
   const src = useMemo(() => videoSrcFor(state), [state]);
   const sizeClass = useMemo(() => sizeToPx(size), [size]);
 
-  // ✅ boucle calme (pas de “cut”)
   const loop = true;
 
   useEffect(() => {
@@ -61,24 +66,15 @@ export default function Lumi({ state, pulse = false, size = "lg", className = ""
 
   return (
     <div className={`relative ${sizeClass} ${className}`}>
-      {/* ✅ Lumi “dans son cercle” (sans overlay gris / sans heartbeat) */}
       <div
         className={[
           "relative h-full w-full rounded-full overflow-hidden",
           "ring-1 ring-white/12",
           "shadow-[0_10px_40px_rgba(0,0,0,0.35)]",
-          // pulse conservé pour compat mais volontairement inactif (pas d'effet visuel)
           pulse ? "" : "",
         ].join(" ")}
       >
-        <video
-          ref={videoRef}
-          className="h-full w-full object-cover"
-          muted
-          playsInline
-          autoPlay
-          loop={loop}
-        >
+        <video ref={videoRef} className="h-full w-full object-cover" muted playsInline autoPlay loop={loop}>
           <source src={src} type="video/mp4" />
         </video>
       </div>

@@ -56,7 +56,9 @@ export default function Welcome() {
           </div>
 
           <div className="mt-10 text-center text-xs text-white/45">
-            Créé avec ❤️ pour les enfants (et pour apaiser les parents)par <seo-eho className="com">SeoEhoHumanrank</seo-eho>
+            Créé avec ❤️ pour les enfants (et pour apaiser les parents) par{" "}
+<span className="font-semibold text-white/70">SeoEhoHumanrank</span>
+
           </div>
         </div>
       </div>
