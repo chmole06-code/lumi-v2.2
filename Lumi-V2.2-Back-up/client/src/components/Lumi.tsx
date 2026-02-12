@@ -74,9 +74,18 @@ export default function Lumi({ state, pulse = false, size = "lg", className = ""
           pulse ? "" : "",
         ].join(" ")}
       >
-        <video ref={videoRef} className="h-full w-full object-cover" muted playsInline autoPlay loop={loop}>
-          <source src={src} type="video/mp4" />
-        </video>
+       <video
+  key={src}
+  ref={videoRef}
+  className="h-full w-full object-cover"
+  muted
+  playsInline
+  autoPlay
+  loop={loop}
+>
+  <source src={src} type="video/mp4" />
+</video>
+
       </div>
     </div>
   );
