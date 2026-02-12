@@ -203,11 +203,12 @@ export default function Game() {
     if (state.locked || state.busy) return;
     if (readSleep().sleeping) return;
 
+
     // ✅ Lumi pose/état : on utilise les states existants + assertions si nécessaire
     // (selon tes assets, "dinner" et "pyjama" existent généralement)
     const routineLumi: Record<Routine, LumiState> = {
       bath: "bath",
-      eat: "eat" as LumiState,
+      eat: "dinner" as LumiState,
       teeth: "brush" as LumiState,
       pyjama: "pyjama" as LumiState,
       sleep: "night" as LumiState,
