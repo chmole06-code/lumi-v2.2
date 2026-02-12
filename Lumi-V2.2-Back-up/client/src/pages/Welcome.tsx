@@ -1,8 +1,12 @@
 import { useLocation } from "wouter";
 import Lumi from "@/components/Lumi";
+import { useAudio } from "@/audio/useAudio";
+import { useRef } from "react";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
+  const audio = useAudio();
+const hasPlayedRef = useRef(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0f1a] to-[#05070d] text-white">
@@ -32,7 +36,23 @@ export default function Welcome() {
           <div className="flex flex-col items-center gap-3 mt-10">
             <button
               type="button"
-              onClick={() => setLocation("/game")}
+             onClick={async () => {
+  if (hasPlayedRef.current) return;
+  hasPlayedRef.current = true;
+
+  try {
+    await audio.playFx("fairyDust");
+
+    setTimeout(() => {
+      audio.playRitual("welcome");
+    }, 250);
+  } catch {}
+
+  setTimeout(() => {
+    setLocation("/game");
+  }, 900);
+}}
+
               className="h-14 px-10 rounded-full text-base md:text-lg font-extrabold text-slate-950
                 bg-[linear-gradient(135deg,rgba(120,255,240,1),rgba(255,130,205,1))]
                 shadow-[0_24px_80px_rgba(0,0,0,0.55)]

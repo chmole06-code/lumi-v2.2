@@ -206,13 +206,14 @@ export default function Game() {
 
     // ✅ Lumi pose/état : on utilise les states existants + assertions si nécessaire
     // (selon tes assets, "dinner" et "pyjama" existent généralement)
-    const routineLumi: Record<Routine, LumiState> = {
-      bath: "bath",
-      eat: "dinner" as LumiState,
-      teeth: "brush" as LumiState,
-      pyjama: "pyjama" as LumiState,
-      sleep: "night" as LumiState,
-    };
+   const routineLumi: Record<Routine, LumiState> = {
+  bath: "bath",
+  eat: "eat",
+  teeth: "brush",
+  pyjama: "pyjama",
+  sleep: "night",
+};
+
 
     // ✅ Audio métier : FX poussière + voix du rituel (une fois au démarrage)
     // - unlock se fait déjà silencieusement au niveau App.tsx sur la première interaction
