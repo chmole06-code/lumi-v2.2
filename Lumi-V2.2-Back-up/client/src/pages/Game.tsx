@@ -207,7 +207,7 @@ export default function Game() {
     // (selon tes assets, "dinner" et "pyjama" existent généralement)
     const routineLumi: Record<Routine, LumiState> = {
       bath: "bath",
-      eat: "dinner" as LumiState,
+      eat: "eat" as LumiState,
       teeth: "brush" as LumiState,
       pyjama: "pyjama" as LumiState,
       sleep: "night" as LumiState,
