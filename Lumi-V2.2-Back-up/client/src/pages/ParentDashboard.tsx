@@ -26,7 +26,7 @@ export default function ParentDashboard() {
               onClick={() => setLocation("/game")}
               className="rounded-2xl bg-white text-slate-950 px-4 py-2 text-sm font-extrabold hover:opacity-95 active:scale-[0.99] transition"
             >
-              Ouvrir Lumi
+              Lumi le petit alié des rituels du soir 
             </button>
           </div>
         </div>
@@ -46,11 +46,11 @@ export default function ParentDashboard() {
             <div className="text-sm text-white/70">Contrôles</div>
 
             <div className="mt-6 text-sm text-white/70">
-              Un seul mode : calme. Le bouton “repos/rest” est supprimé côté enfant.
+              Apaiser et encourager les enfants et les parents après une journée bien remplie.
             </div>
 
             <div className="mt-6 text-xs text-white/45">
-              Objectif : sérénité. Pas de badges, pas de streaks, pas de récompenses.
+              Objectif : Ethique, accompagnement et encouragements & sérénité. Pas de badges, pas de streaks, pas de récompenses.
             </div>
           </div>
         </div>
